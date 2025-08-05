@@ -1,6 +1,10 @@
+
+
 # Product-GPT App
 
-A simple Shopify app that displays products from your store, shows detailed product information, and includes ChatGPT integration for AI assistance.
+<!-- Updated: 2024-01-05 -->
+
+A Shopify app that displays products from your store and integrates with ChatGPT for enhanced functionality.
 
 ## Features
 
