@@ -14,6 +14,7 @@ import {
   Badge,
   Modal,
   Divider,
+  Banner,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
@@ -24,7 +25,7 @@ export const loader = async ({ request }) => {
     return null;
   } catch (error) {
     console.error("Authentication error:", error);
-    return { error: "Authentication failed" };
+    return { error: "Authentication failed", isDirectAccess: true };
   }
 };
 
@@ -94,14 +95,24 @@ export default function Index() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [chatGptModalOpen, setChatGptModalOpen] = useState(false);
   const [isLoggedInToChatGpt, setIsLoggedInToChatGpt] = useState(false);
+  const [isDirectAccess, setIsDirectAccess] = useState(false);
 
   const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
   const products = fetcher.data?.products || [];
+  const loaderData = fetcher.data;
 
   useEffect(() => {
-    // Load products on component mount
-    fetcher.submit({ action: "fetchProducts" }, { method: "POST" });
-  }, []);
+    // Check if this is direct access
+    if (loaderData?.isDirectAccess) {
+      setIsDirectAccess(true);
+      return;
+    }
+    
+    // Load products on component mount if authenticated
+    if (!isDirectAccess) {
+      fetcher.submit({ action: "fetchProducts" }, { method: "POST" });
+    }
+  }, [loaderData]);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -113,7 +124,11 @@ export default function Index() {
     window.open(chatGptLoginUrl, "_blank", "width=800,height=600");
     setIsLoggedInToChatGpt(true);
     setChatGptModalOpen(false);
-    shopify.toast.show("ChatGPT login window opened! Please login there.");
+    if (shopify.toast) {
+      shopify.toast.show("ChatGPT login window opened! Please login there.");
+    } else {
+      alert("ChatGPT login window opened! Please login there.");
+    }
   };
 
   const formatPrice = (price) => {
@@ -122,6 +137,42 @@ export default function Index() {
       currency: 'USD'
     }).format(price);
   };
+
+  // Show direct access message if not embedded in Shopify
+  if (isDirectAccess) {
+    return (
+      <Page>
+        <Layout>
+          <Layout.Section>
+            <Banner
+              title="App Access"
+              tone="info"
+            >
+              <p>This app is designed to run within the Shopify Admin. Please access it through your Shopify store's app section.</p>
+              <p>If you're a developer testing, make sure you're accessing this through the Shopify Admin interface.</p>
+            </Banner>
+            
+            <Card>
+              <BlockStack gap="500">
+                <Text as="h2" variant="headingMd">
+                  Product-GPT App
+                </Text>
+                <Text variant="bodyMd">
+                  This app displays your Shopify store products and integrates with ChatGPT for AI assistance.
+                </Text>
+                <Button 
+                  variant="primary" 
+                  onClick={handleChatGptLogin}
+                >
+                  Connect ChatGPT
+                </Button>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </Page>
+    );
+  }
 
   return (
     <Page>
