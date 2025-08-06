@@ -6,23 +6,6 @@ import {
 } from "@shopify/shopify-app-remix/server";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
-// Validate required environment variables
-const requiredEnvVars = {
-  SHOPIFY_CLIENT_ID: process.env.SHOPIFY_CLIENT_ID,
-  SHOPIFY_CLIENT_SECRET: process.env.SHOPIFY_CLIENT_SECRET,
-  SCOPES: process.env.SCOPES,
-  SHOPIFY_APP_URL: process.env.SHOPIFY_APP_URL,
-};
-
-// Check for missing environment variables
-const missingVars = Object.entries(requiredEnvVars)
-  .filter(([key, value]) => !value)
-  .map(([key]) => key);
-
-if (missingVars.length > 0) {
-  console.warn(`Missing environment variables: ${missingVars.join(', ')}`);
-}
-
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_CLIENT_ID || "dummy-key",
   apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET || "dummy-secret",
@@ -37,30 +20,6 @@ const shopify = shopifyApp({
     unstable_newEmbeddedAuthStrategy: true,
     removeRest: true,
   },
-  hooks: {
-    beforeAuth: (request) => {
-      // Ensure headers are set correctly for iframe embedding
-      const response = new Response();
-      response.headers.delete("X-Frame-Options");
-      response.headers.set(
-        "Content-Security-Policy",
-        "frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com;"
-      );
-      return response;
-    },
-    afterAuth: (request, response) => {
-      // Remove X-Frame-Options from all responses
-      response.headers.delete("X-Frame-Options");
-      response.headers.set(
-        "Content-Security-Policy",
-        "frame-ancestors 'self' https://admin.shopify.com https://*.myshopify.com;"
-      );
-      return response;
-    },
-  },
-  ...(process.env.SHOP_CUSTOM_DOMAIN
-    ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
-    : {}),
 });
 
 export default shopify;
