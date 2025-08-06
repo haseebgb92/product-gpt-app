@@ -1,0 +1,31 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "1c94c4d934913f4ad2124c5ccd5f948e"
+name = "product-gpt"
+handle = "product-gpt-1"
+application_url = "https://product-gpt-app-production.up.railway.app"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2025-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_orders,read_products,write_products"
+
+[auth]
+redirect_urls = [ "https://product-gpt-app-production.up.railway.app/auth/callback", "https://product-gpt-app-production.up.railway.app/auth/shopify/callback", "https://product-gpt-app-production.up.railway.app/api/auth/callback" ]
+
+[pos]
+embedded = false
