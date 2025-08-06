@@ -12,11 +12,6 @@
       "dest": "/build/server/index.js"
     }
   ],
-  "functions": {
-    "build/server/index.js": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production",
     "SHOPIFY_CLIENT_ID": "@shopify_client_id",
