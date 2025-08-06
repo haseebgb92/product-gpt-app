@@ -11,7 +11,7 @@ include_config_on_deploy = true
 automatically_update_urls_on_dev = true
 
 [webhooks]
-api_version = "2025-07"
+api_version = "2023-10"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
@@ -23,7 +23,7 @@ api_version = "2025-07"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "read_products,write_products,read_orders"
 
 [auth]
 redirect_urls = ["https://threshold-rebound-sie-in.trycloudflare.com/auth/callback", "https://threshold-rebound-sie-in.trycloudflare.com/auth/shopify/callback", "https://threshold-rebound-sie-in.trycloudflare.com/api/auth/callback"]
