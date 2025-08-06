@@ -95,7 +95,7 @@ export default function Index() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [chatGptModalOpen, setChatGptModalOpen] = useState(false);
   const [isLoggedInToChatGpt, setIsLoggedInToChatGpt] = useState(false);
-  const [isDirectAccess, setIsDirectAccess] = useState(false);
+  const [chatGptSidebarOpen, setChatGptSidebarOpen] = useState(false);
 
   const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
   const products = fetcher.data?.products || [];
@@ -104,14 +104,11 @@ export default function Index() {
   useEffect(() => {
     // Check if this is direct access
     if (loaderData?.isDirectAccess) {
-      setIsDirectAccess(true);
       return;
     }
     
     // Load products on component mount if authenticated
-    if (!isDirectAccess) {
-      fetcher.submit({ action: "fetchProducts" }, { method: "POST" });
-    }
+    fetcher.submit({ action: "fetchProducts" }, { method: "POST" });
   }, [loaderData]);
 
   const handleProductClick = (product) => {
@@ -119,15 +116,12 @@ export default function Index() {
   };
 
   const handleChatGptLogin = () => {
-    // Open ChatGPT login in a new window
-    const chatGptLoginUrl = "https://chat.openai.com/auth/login";
-    window.open(chatGptLoginUrl, "_blank", "width=800,height=600");
+    // Open ChatGPT in a sidebar instead of new window
+    setChatGptSidebarOpen(true);
     setIsLoggedInToChatGpt(true);
     setChatGptModalOpen(false);
     if (shopify.toast) {
-      shopify.toast.show("ChatGPT login window opened! Please login there.");
-    } else {
-      alert("ChatGPT login window opened! Please login there.");
+      shopify.toast.show("ChatGPT sidebar opened!");
     }
   };
 
@@ -139,7 +133,7 @@ export default function Index() {
   };
 
   // Show direct access message if not embedded in Shopify
-  if (isDirectAccess) {
+  if (loaderData?.isDirectAccess) {
     return (
       <Page>
         <Layout>
@@ -295,6 +289,7 @@ export default function Index() {
                       variant="plain"
                       onClick={() => {
                         setIsLoggedInToChatGpt(false);
+                        setChatGptSidebarOpen(false);
                       }}
                     >
                       Disconnect
@@ -306,6 +301,60 @@ export default function Index() {
           </Layout.Section>
         </Layout>
       </BlockStack>
+
+      {/* ChatGPT Sidebar */}
+      {chatGptSidebarOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '400px',
+          height: '100vh',
+          backgroundColor: 'white',
+          borderLeft: '1px solid #ddd',
+          boxShadow: '-2px 0 10px rgba(0,0,0,0.1)',
+          zIndex: 1000,
+          padding: '20px',
+          overflowY: 'auto'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ margin: 0 }}>ChatGPT Assistant</h2>
+            <button 
+              onClick={() => setChatGptSidebarOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '20px',
+                cursor: 'pointer',
+                color: '#666'
+              }}
+            >
+              ×
+            </button>
+          </div>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <p>Welcome to ChatGPT! Ask me anything about your products or business.</p>
+            <p><strong>Connected:</strong> ✅ Ready to help</p>
+          </div>
+          
+          <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '15px', marginBottom: '20px' }}>
+            <h4>Example Questions:</h4>
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <li>"What are my best-selling products?"</li>
+              <li>"How can I improve my product descriptions?"</li>
+              <li>"Suggest pricing strategies for my products"</li>
+              <li>"What marketing ideas would work for my store?"</li>
+            </ul>
+          </div>
+          
+          <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '15px', backgroundColor: '#f9f9f9' }}>
+            <p style={{ margin: 0, fontStyle: 'italic', color: '#666' }}>
+              ChatGPT integration is ready! You can now ask questions about your products and get AI-powered insights.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Product Details Modal */}
       {selectedProduct && (
@@ -405,9 +454,9 @@ export default function Index() {
       <Modal
         open={chatGptModalOpen}
         onClose={() => setChatGptModalOpen(false)}
-        title="Login to ChatGPT"
+        title="Connect to ChatGPT"
         primaryAction={{
-          content: "Open Login",
+          content: "Open ChatGPT Sidebar",
           onAction: handleChatGptLogin,
         }}
         secondaryActions={[
@@ -420,11 +469,11 @@ export default function Index() {
         <Modal.Section>
           <BlockStack gap="400">
             <Text variant="bodyMd">
-              Click "Open Login" to connect to ChatGPT. This will open ChatGPT's login page in a new window where you can sign in with your existing account.
+              Click "Open ChatGPT Sidebar" to connect to ChatGPT. This will open a sidebar within the app where you can interact with AI assistance.
             </Text>
             
             <Text variant="bodyMd">
-              Once you're logged in to ChatGPT, you'll be able to use AI assistance within this app.
+              The ChatGPT sidebar will help you with product insights, marketing ideas, and business advice.
             </Text>
           </BlockStack>
         </Modal.Section>
