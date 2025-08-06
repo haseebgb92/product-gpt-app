@@ -11,12 +11,5 @@
       "src": "/(.*)",
       "dest": "/build/server/index.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "SHOPIFY_CLIENT_ID": "@shopify_client_id",
-    "SHOPIFY_CLIENT_SECRET": "@shopify_client_secret",
-    "SCOPES": "@shopify_scopes",
-    "SHOPIFY_APP_URL": "@shopify_app_url"
-  }
+  ]
 } 
