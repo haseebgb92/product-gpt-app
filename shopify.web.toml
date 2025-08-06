@@ -2,6 +2,11 @@ name = "remix"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks/app/uninstalled"
 
-[commands]
-predev = "npx prisma generate"
-dev = "npx prisma migrate deploy && npm exec remix vite:dev"
+[build]
+path = "."
+
+[build.environment]
+NODE_ENV = "development"
+
+[dev]
+command = "npm exec remix vite:dev"
