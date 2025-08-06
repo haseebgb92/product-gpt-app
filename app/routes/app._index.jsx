@@ -21,64 +21,73 @@ import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-
-  return null;
+  try {
+    await authenticate.admin(request);
+    return null;
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return { error: "Authentication failed" };
+  }
 };
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
-  const formData = await request.formData();
-  const action = formData.get("action");
+  try {
+    const { admin } = await authenticate.admin(request);
+    const formData = await request.formData();
+    const action = formData.get("action");
 
-  if (action === "fetchProducts") {
-    const response = await admin.graphql(
-      `#graphql
-        query getProducts($first: Int!) {
-          products(first: $first) {
-            edges {
-              node {
-                id
-                title
-                handle
-                status
-                description
-                images(first: 1) {
-                  edges {
-                    node {
-                      url
-                      altText
+    if (action === "fetchProducts") {
+      const response = await admin.graphql(
+        `#graphql
+          query getProducts($first: Int!) {
+            products(first: $first) {
+              edges {
+                node {
+                  id
+                  title
+                  handle
+                  status
+                  description
+                  images(first: 1) {
+                    edges {
+                      node {
+                        url
+                        altText
+                      }
                     }
                   }
-                }
-                variants(first: 10) {
-                  edges {
-                    node {
-                      id
-                      title
-                      price
-                      availableForSale
+                  variants(first: 10) {
+                    edges {
+                      node {
+                        id
+                        title
+                        price
+                        availableForSale
+                      }
                     }
                   }
+                  tags
+                  productType
+                  vendor
                 }
-                tags
-                productType
-                vendor
               }
             }
-          }
-        }`,
-      {
-        variables: {
-          first: 20,
+          }`,
+        {
+          variables: {
+            first: 20,
+          },
         },
-      },
-    );
-    const responseJson = await response.json();
-    return { products: responseJson.data.products.edges };
-  }
+      );
+      const responseJson = await response.json();
+      return { products: responseJson.data.products.edges };
+    }
 
-  return null;
+    return null;
+  } catch (error) {
+    console.error("Action error:", error);
+    return { error: "Failed to fetch products" };
+  }
 };
 
 export default function Index() {

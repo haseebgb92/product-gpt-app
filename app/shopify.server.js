@@ -6,12 +6,29 @@ import {
 } from "@shopify/shopify-app-remix/server";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
+// Validate required environment variables
+const requiredEnvVars = {
+  SHOPIFY_CLIENT_ID: process.env.SHOPIFY_CLIENT_ID,
+  SHOPIFY_CLIENT_SECRET: process.env.SHOPIFY_CLIENT_SECRET,
+  SCOPES: process.env.SCOPES,
+  SHOPIFY_APP_URL: process.env.SHOPIFY_APP_URL,
+};
+
+// Check for missing environment variables
+const missingVars = Object.entries(requiredEnvVars)
+  .filter(([key, value]) => !value)
+  .map(([key]) => key);
+
+if (missingVars.length > 0) {
+  console.warn(`Missing environment variables: ${missingVars.join(', ')}`);
+}
+
 const shopify = shopifyApp({
-  apiKey: process.env.SHOPIFY_CLIENT_ID,
-  apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET || "",
+  apiKey: process.env.SHOPIFY_CLIENT_ID || "dummy-key",
+  apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET || "dummy-secret",
   apiVersion: ApiVersion.January25,
-  scopes: process.env.SCOPES?.split(","),
-  appUrl: process.env.SHOPIFY_APP_URL || "",
+  scopes: process.env.SCOPES?.split(",") || ["read_products"],
+  appUrl: process.env.SHOPIFY_APP_URL || "http://localhost:3000",
   authPathPrefix: "/auth",
   sessionStorage: new MemorySessionStorage(),
   distribution: AppDistribution.AppStore,
