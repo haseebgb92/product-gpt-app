@@ -3,7 +3,7 @@
 client_id = "dfabfb1fb6ac44cc330a040d52657e20"
 name = "Product-GPT"
 handle = "product-gpt"
-application_url = "https://threshold-rebound-sie-in.trycloudflare.com"
+application_url = "https://product-gpt-app-production.up.railway.app"
 embedded = true
 
 [build]
@@ -26,7 +26,7 @@ api_version = "2023-10"
 scopes = "read_products,write_products,read_orders"
 
 [auth]
-redirect_urls = ["https://threshold-rebound-sie-in.trycloudflare.com/auth/callback", "https://threshold-rebound-sie-in.trycloudflare.com/auth/shopify/callback", "https://threshold-rebound-sie-in.trycloudflare.com/api/auth/callback"]
+redirect_urls = ["https://product-gpt-app-production.up.railway.app/auth/callback", "https://product-gpt-app-production.up.railway.app/auth/shopify/callback", "https://product-gpt-app-production.up.railway.app/api/auth/callback"]
 
 [pos]
 embedded = false

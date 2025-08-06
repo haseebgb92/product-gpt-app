@@ -11,7 +11,7 @@ const shopify = shopifyApp({
   apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET || "dummy-secret",
   apiVersion: ApiVersion.January25,
   scopes: process.env.SCOPES?.split(",") || ["read_products"],
-  appUrl: process.env.SHOPIFY_APP_URL || "http://localhost:3000",
+  appUrl: process.env.SHOPIFY_APP_URL || "https://product-gpt-app-production.up.railway.app",
   authPathPrefix: "/auth",
   sessionStorage: new MemorySessionStorage(),
   distribution: AppDistribution.AppStore,
