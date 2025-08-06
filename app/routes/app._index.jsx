@@ -14,7 +14,6 @@ import {
   Badge,
   Modal,
   Divider,
-  Banner,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
@@ -25,7 +24,7 @@ export const loader = async ({ request }) => {
     return null;
   } catch (error) {
     console.error("Authentication error:", error);
-    return { error: "Authentication failed", isDirectAccess: true };
+    return { error: "Authentication failed" };
   }
 };
 
@@ -99,17 +98,11 @@ export default function Index() {
 
   const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
   const products = fetcher.data?.products || [];
-  const loaderData = fetcher.data;
 
   useEffect(() => {
-    // Check if this is direct access
-    if (loaderData?.isDirectAccess) {
-      return;
-    }
-    
-    // Load products on component mount if authenticated
+    // Always load products when component mounts
     fetcher.submit({ action: "fetchProducts" }, { method: "POST" });
-  }, [loaderData]);
+  }, []);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -131,42 +124,6 @@ export default function Index() {
       currency: 'USD'
     }).format(price);
   };
-
-  // Show direct access message if not embedded in Shopify
-  if (loaderData?.isDirectAccess) {
-    return (
-      <Page>
-        <Layout>
-          <Layout.Section>
-            <Banner
-              title="App Access"
-              tone="info"
-            >
-              <p>This app is designed to run within the Shopify Admin. Please access it through your Shopify store's app section.</p>
-              <p>If you're a developer testing, make sure you're accessing this through the Shopify Admin interface.</p>
-            </Banner>
-            
-            <Card>
-              <BlockStack gap="500">
-                <Text as="h2" variant="headingMd">
-                  Product-GPT App
-                </Text>
-                <Text variant="bodyMd">
-                  This app displays your Shopify store products and integrates with ChatGPT for AI assistance.
-                </Text>
-                <Button 
-                  variant="primary" 
-                  onClick={handleChatGptLogin}
-                >
-                  Connect ChatGPT
-                </Button>
-              </BlockStack>
-            </Card>
-          </Layout.Section>
-        </Layout>
-      </Page>
-    );
-  }
 
   return (
     <Page>
