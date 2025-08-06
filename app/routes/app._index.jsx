@@ -13,7 +13,6 @@ import {
   Thumbnail,
   Badge,
   Modal,
-  TextField,
   Divider,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
